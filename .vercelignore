@@ -1,0 +1,17 @@
+node_modules/
+.next/
+.next-test/
+.data/
+.env
+.env.*
+!.env.example
+.vercel/
+.git/
+.logs/
+.npm-cache/
+prisma/*.db*
+playwright-report/
+test-results/
+*.tsbuildinfo
+.agents/
+skills-lock.json

@@ -16,6 +16,9 @@ for (const args of [
   ["node_modules/prisma/build/index.js", "migrate", "deploy", "--schema", "prisma/postgresql/schema.prisma"],
   ["node_modules/next/dist/bin/next", "build"],
 ]) {
-  const result = spawnSync(process.execPath, args, { stdio: "inherit", env: process.env });
+  const env = args.includes("migrate") && process.env.DATABASE_URL_UNPOOLED
+    ? { ...process.env, DATABASE_URL: process.env.DATABASE_URL_UNPOOLED }
+    : process.env;
+  const result = spawnSync(process.execPath, args, { stdio: "inherit", env });
   if (result.status !== 0) process.exit(result.status ?? 1);
 }

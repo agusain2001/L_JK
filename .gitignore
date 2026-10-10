@@ -16,3 +16,9 @@ playwright-report/
 test-results/
 *.tsbuildinfo
 .logs/
+
+.vercel
+.env*
+.agents/skills/neon/
+.agents/skills/neon-postgres/
+skills-lock.json

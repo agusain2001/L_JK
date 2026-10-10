@@ -11,6 +11,7 @@ export default defineConfig([
     ".next-test/**",
     "next-env.d.ts",
     ".npm-cache/**",
+    ".vercel/**",
     "playwright-report/**",
     "test-results/**",
   ]),
