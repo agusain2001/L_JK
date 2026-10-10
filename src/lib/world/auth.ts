@@ -10,6 +10,8 @@ import { isAdmin } from "@/lib/security";
 import type { WorldActor } from "./schemas";
 function secret() {
   if (process.env.BETTER_AUTH_SECRET) return process.env.BETTER_AUTH_SECRET;
+  if (process.env.VERCEL)
+    throw new Error("Set BETTER_AUTH_SECRET in Vercel before deploying.");
   const file = path.join(
     process.cwd(),
     ".data",
@@ -33,6 +35,8 @@ export const auth = betterAuth({
   secret: secret(),
   baseURL:
     process.env.BETTER_AUTH_URL ||
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined) ||
     (process.env.NEXT_TEST_BUILD === "1"
       ? "http://127.0.0.1:3001"
       : "http://127.0.0.1:3000"),

@@ -4,6 +4,11 @@ node_modules/
 .next-test/
 .env
 .env.local
+.env.*.local
+.env.production
+.env.development
+.env.preview
+.vercel/
 prisma/*.db*
 public/uploads/
 .data/

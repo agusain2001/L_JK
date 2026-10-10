@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1",
     "build": "next build",
-    "postinstall": "prisma generate",
+    "postinstall": "node scripts/generate-client.mjs",
+    "vercel-build": "node scripts/vercel-build.mjs",
     "db:generate": "prisma generate",
     "db:prepare:postgres": "node scripts/prepare-postgres.mjs",
     "db:generate:postgres": "prisma generate --schema prisma/postgresql/schema.prisma",
@@ -15,6 +16,7 @@
     "lint": "eslint .",
     "db:setup": "node scripts/setup-db.mjs",
     "test": "tsx --test tests/unit.test.ts",
+    "test:storage": "node scripts/test-storage.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {
@@ -23,6 +25,7 @@
     "@prisma/client": "6.19.0",
     "@react-three/drei": "^10.7.0",
     "@react-three/fiber": "^9.4.0",
+    "@vercel/blob": "^2.8.1",
     "apify-client": "^2.19.0",
     "better-auth": "^1.7.7",
     "gsap": "^3.13.0",

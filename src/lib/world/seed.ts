@@ -1,7 +1,6 @@
 import "server-only";
 import { db } from "@/lib/db";
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { demoChime } from "./demo-chime";
 import { features, defaultWorldSettings } from "./features";
 let pending: Promise<void> | undefined;
 export function ensureWorld() {
@@ -223,38 +222,7 @@ export function ensureWorld() {
         update: {},
       });
     // Original generated chime: real playable audio, explicitly not the owner's voice.
-    const samples = 44100 * 2,
-      buffer = Buffer.alloc(44 + samples * 2);
-    buffer.write("RIFF", 0);
-    buffer.writeUInt32LE(buffer.length - 8, 4);
-    buffer.write("WAVEfmt ", 8);
-    buffer.writeUInt32LE(16, 16);
-    buffer.writeUInt16LE(1, 20);
-    buffer.writeUInt16LE(1, 22);
-    buffer.writeUInt32LE(44100, 24);
-    buffer.writeUInt32LE(88200, 28);
-    buffer.writeUInt16LE(2, 32);
-    buffer.writeUInt16LE(16, 34);
-    buffer.write("data", 36);
-    buffer.writeUInt32LE(samples * 2, 40);
-    for (let i = 0; i < samples; i++)
-      buffer.writeInt16LE(
-        Math.round(
-          Math.sin((2 * Math.PI * 523.25 * i) / 44100) *
-            Math.exp(-i / 20000) *
-            2200,
-        ),
-        44 + i * 2,
-      );
-    const mediaDirectory = path.join(
-      process.cwd(),
-      ".data",
-      process.env.NEXT_TEST_BUILD === "1" ? "world-media-test" : "world-media",
-    );
-    await mkdir(mediaDirectory, {
-      recursive: true,
-    });
-    await writeFile(path.join(mediaDirectory, "demo-chime.wav"), buffer);
+    const buffer = demoChime();
     await db.mediaAsset.upsert({
       where: { id: "demo-chime" },
       create: {

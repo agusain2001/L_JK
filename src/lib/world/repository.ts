@@ -16,7 +16,7 @@ import { chooseDaily } from "./daily";
 import type { Prisma } from "@prisma/client";
 export async function worldSettings() {
   await ensureWorld();
-  const rows = await db.featureSettings.findMany();
+  const rows = await db.featureSettings.findMany({ where: { NOT: { key: { startsWith: "internal:" } } } });
   return {
     flags: Object.fromEntries(rows.map((row) => [row.key, row.enabled])),
     settings: settingsSchema.parse({

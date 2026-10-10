@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authorize } from "@/lib/security";
 import { db } from "@/lib/db";
 import { serializeMemory } from "@/lib/memories";
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { galleryStorage } from "@/lib/media-storage";
 import { randomUUID } from "node:crypto";
 import sharp from "sharp";
 export async function POST(req: NextRequest) {
@@ -38,9 +37,7 @@ export async function POST(req: NextRequest) {
       .resize(1600, 1600, { fit: "inside", withoutEnlargement: true })
       .jpeg({ quality: 88 })
       .toBuffer();
-    const directory = path.join(process.cwd(), ".data", "uploads");
-    await mkdir(directory, { recursive: true });
-    await writeFile(path.join(directory, filename), buffer);
+    await galleryStorage.put(filename, buffer, "image/jpeg");
     const memory = await db.memory.create({
       data: {
         title: file.name.replace(/\.[^.]+$/, "").slice(0, 120),

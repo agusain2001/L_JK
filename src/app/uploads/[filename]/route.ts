@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
+import { galleryStorage } from "@/lib/media-storage";
 import { db } from "@/lib/db";
 import { isAdmin } from "@/lib/security";
 import { actor, permits } from "@/lib/world/auth";
@@ -18,9 +17,7 @@ export async function GET(
   if (!memory || (!memory.approved && !(await isAdmin())) || !permits(memory, await actor()))
     return new NextResponse(null, { status: 404 });
   try {
-    const file = await readFile(
-      path.join(process.cwd(), ".data", "uploads", filename),
-    );
+    const file = await galleryStorage.read(filename);
     return new NextResponse(new Uint8Array(file), {
       headers: {
         "Content-Type": "image/jpeg",

@@ -140,7 +140,9 @@ Bouquet controls support mouse dragging, drag reordering, mobile taps, keyboard 
 
 ## Deployment and storage
 
-The default database is `prisma/dev.db`; canonical photo uploads live in `.data/uploads`, Little World image/audio uploads in `.data/world-media`, and playground editorial content in `.data/games.json`. Deploy on a persistent Node.js host with volumes for `prisma` and `.data`. The private S3 adapter supports Little World attachments and booth exports; canonical uploads and the playground JSON file still need persistent storage. No external bucket has been provisioned or tested with credentials.
+For Vercel, use the PostgreSQL and private cloud-storage setup in [VERCEL.md](VERCEL.md). The included Vercel build configuration applies the PostgreSQL migrations. Local SQLite/filesystem settings cannot be used as persistent storage on Vercel.
+
+The default local database is `prisma/dev.db`; canonical photo uploads live in `.data/uploads`, Little World image/audio uploads in `.data/world-media`, and playground editorial content in `.data/games.json`. For local filesystem hosting, preserve `prisma` and `.data` on persistent volumes. The private Blob/S3 adapter supports gallery uploads, Little World attachments, and booth exports. PostgreSQL deployments save playground editorial content in the database. No cloud database or storage has been provisioned or tested with credentials.
 
 For PostgreSQL production, use `prisma/postgresql/schema.prisma` and its separate migration directory, set `DATABASE_PROVIDER=postgresql`, and follow [LITTLE-WORLD.md](LITTLE-WORLD.md). SQLite migrations cannot be replayed against PostgreSQL. A production database connection has not been provided.
 
