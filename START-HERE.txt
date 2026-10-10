@@ -1,0 +1,28 @@
+RASHIKA'S WEBSITE - COMPACT PROJECT ARCHIVE
+
+Extract the ZIP, then open PowerShell inside the extracted KJ folder.
+Install Node.js 24 LTS if needed, then run:
+
+  Copy-Item .env.example .env
+  npm.cmd ci
+  npm.cmd run db:setup
+  npm.cmd run dev
+
+Open http://127.0.0.1:3000
+
+The complete source, public assets, package.json and package-lock.json are
+included. The existing local database is included as a consistent SQLite
+snapshot, along with local uploaded media and any editorial content.
+
+For production: npm.cmd run build, then npm.cmd start.
+See README.md, LITTLE-WORLD.md and ASSETS.md for details and asset credits.
+
+Installed libraries were NOT uninstalled or deleted from the original project.
+node_modules is excluded from this archive; npm.cmd ci restores the exact
+locked dependencies in the extracted project. Internet access is required.
+
+Build caches, logs, screenshots, generated verification outputs, test databases,
+local secrets and duplicate source artwork are excluded. The Gemini garden
+video is included at public/video/tulip-garden-gemini.mp4. The dark video test
+fixture is retained. Local configuration comes from .env.example; existing
+login sessions do not transfer because authentication secrets are excluded.

@@ -1,0 +1,21 @@
+export type MemoryMedia = {
+  id: string;
+  kind: "image" | "video";
+  title: string;
+  caption: string;
+  description: string;
+  mediaUrl: string;
+  thumbnailUrl?: string;
+  sourceUrl?: string;
+  date?: string;
+  location?: string;
+  tags: string[];
+  featured: boolean;
+  approved: boolean;
+  audience?: "public" | "private";
+  recipientId?: string | null;
+  voiceId?: string;
+  order: number;
+  chapter: string;
+  demo?: boolean;
+};

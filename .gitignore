@@ -1,0 +1,13 @@
+node_modules/
+.npm-cache/
+.next/
+.next-test/
+.env
+.env.local
+prisma/*.db*
+public/uploads/
+.data/
+playwright-report/
+test-results/
+*.tsbuildinfo
+.logs/

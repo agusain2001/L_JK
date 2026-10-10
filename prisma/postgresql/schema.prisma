@@ -1,0 +1,263 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+model Memory {
+  id String @id @default(cuid())
+  kind String @default("image")
+  title String @default("")
+  caption String @default("")
+  description String @default("")
+  mediaUrl String @unique
+  thumbnailUrl String?
+  sourceUrl String?
+  date String?
+  location String?
+  tags String @default("[]")
+  featured Boolean @default(false)
+  approved Boolean @default(false)
+  audience String @default("public")
+  recipientId String?
+  order Int @default(0)
+  chapter String @default("memories")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id String @id
+  name String
+  email String @unique
+  emailVerified Boolean @default(false)
+  image String?
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sessions Session[]
+  accounts Account[]
+}
+model Session {
+  id String @id
+  token String @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+model Account {
+  id String @id
+  accountId String
+  providerId String
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken String?
+  refreshToken String?
+  idToken String?
+  accessTokenExpiresAt DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope String?
+  password String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([userId])
+}
+model Verification {
+  id String @id
+  identifier String
+  value String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([identifier])
+}
+model Invitation {
+  id String @id @default(cuid())
+  email String
+  tokenHash String @unique
+  expiresAt DateTime
+  usedAt DateTime?
+  revoked Boolean @default(false)
+  createdAt DateTime @default(now())
+}
+model MediaAsset {
+  id String @id @default(cuid())
+  storageKey String @unique
+  mime String
+  bytes Int
+  title String
+  ownerId String
+  audience String @default("private")
+  recipientId String?
+  approved Boolean @default(false)
+  createdAt DateTime @default(now())
+  attachments ContentAttachment[]
+  booth PhotoBoothCreation[]
+}
+// Shared editorial records: one content identity reused by letters, notes,
+// songs, curated mood responses, milestones, and optional reward messages.
+model WorldContent {
+  id String @id @default(cuid())
+  kind String
+  title String
+  body String @default("")
+  description String @default("")
+  audience String @default("private")
+  recipientId String?
+  ownerId String
+  enabled Boolean @default(false)
+  demo Boolean @default(false)
+  color String @default("cream")
+  displayOrder Int @default(0)
+  date String?
+  recurring Boolean @default(false)
+  featured Boolean @default(false)
+  metadata String @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  attachments ContentAttachment[]
+  memories ContentMemory[]
+  capsule TimeCapsule?
+  @@index([kind, enabled, audience])
+}
+model ContentAttachment {
+  contentId String
+  assetId String
+  content WorldContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  asset MediaAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  @@id([contentId, assetId])
+}
+model ContentMemory {
+  contentId String
+  memoryId String
+  content WorldContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  @@id([contentId, memoryId])
+}
+model TimeCapsule {
+  id String @id @default(cuid())
+  contentId String @unique
+  content WorldContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  unlockAt DateTime
+  timeZone String
+  status String @default("scheduled")
+  openings CapsuleOpening[]
+}
+model CapsuleOpening {
+  userId String
+  capsuleId String
+  capsule TimeCapsule @relation(fields: [capsuleId], references: [id], onDelete: Cascade)
+  openedAt DateTime @default(now())
+  @@id([userId, capsuleId])
+}
+model MemoryLocation {
+  id String @id @default(cuid())
+  title String
+  description String @default("")
+  latitude Float?
+  longitude Float?
+  precision String @default("city")
+  audience String @default("private")
+  recipientId String?
+  enabled Boolean @default(false)
+  demo Boolean @default(false)
+  date String?
+  ownerId String
+  memories LocationMemory[]
+}
+model LocationMemory {
+  locationId String
+  memoryId String
+  location MemoryLocation @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  @@id([locationId, memoryId])
+}
+model BucketListItem {
+  id String @id @default(cuid())
+  title String
+  description String @default("")
+  category String @default("Little adventures")
+  completed Boolean @default(false)
+  order Int @default(0)
+  targetDate String?
+  memoryId String?
+  creatorId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model PrivateMessage {
+  id String @id @default(cuid())
+  senderId String
+  recipientId String
+  body String
+  sticker String?
+  memoryId String?
+  replyToId String?
+  submissionKey String? @unique
+  readAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([recipientId, createdAt])
+}
+model GardenFlower {
+  id String @id @default(cuid())
+  eventKey String @unique
+  label String
+  type String @default("daisy")
+  color String @default("#e8a8ad")
+  x Float @default(50)
+  y Float @default(50)
+  memoryId String?
+  contentId String?
+  bucketId String?
+  enabled Boolean @default(true)
+  ownerId String
+  createdAt DateTime @default(now())
+}
+model PhotoBoothCreation {
+  id String @id @default(cuid())
+  userId String
+  assetId String
+  asset MediaAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  caption String @default("")
+  createdAt DateTime @default(now())
+}
+model Keepsake {
+  id String @id @default(cuid())
+  userId String
+  sourceKey String
+  type String
+  title String
+  body String @default("")
+  memoryId String?
+  contentId String?
+  assetId String?
+  createdAt DateTime @default(now())
+  @@unique([userId, sourceKey])
+}
+model RewardUnlock {
+  id String @id @default(cuid())
+  userId String
+  gameId String
+  unlockedAt DateTime @default(now())
+  @@unique([userId, gameId])
+}
+model GameProgress {
+  userId String @id
+  version Int @default(1)
+  data String
+  updatedAt DateTime @updatedAt
+}
+model FeatureSettings {
+  key String @id
+  enabled Boolean @default(true)
+  configuration String @default("{}")
+}
+model RequestLimit {
+  key String @id
+  count Int @default(0)
+  resetAt DateTime
+}
